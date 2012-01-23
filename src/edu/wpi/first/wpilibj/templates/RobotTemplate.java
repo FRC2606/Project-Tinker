@@ -8,10 +8,7 @@
 package edu.wpi.first.wpilibj.templates;
 
 
-import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Victor;
-import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.*;
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -21,19 +18,29 @@ import edu.wpi.first.wpilibj.SpeedController;
  */
 public class RobotTemplate extends IterativeRobot {
     //Declare variables for Victors
-    private final SpeedController leftM = new Victor(4);
-    private final SpeedController rightM = new Victor(3);
-        
+    Victor leftM,rightM;
     
+    //Declare Joysticks
+    Joystick leftStick, rightStick;
     
+    //Declare RobotDrive
+    RobotDrive roboDR;
+    
+    //Declare DriveMode boolean
+    boolean isArcadeDrive;
     
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
     public void robotInit() {
-        leftM.set(1.0);
-        rightM.set(1.0);
+        leftM=new Victor(1,3);
+        rightm=new Victor(1,4);
+        
+        roboDR=new RobotDrive(leftM,rightM);
+        leftStick=new Joystick(2);
+        rightStick=new Joystick(1);
+        isArcadeDrive=false;
     }
 
     /**
@@ -50,4 +57,17 @@ public class RobotTemplate extends IterativeRobot {
         
     }
     
+    /**
+     * This function is called Continously during operator control
+     */
+    public void teleopContinous() {
+        //Drive Selection
+        if(rightStick.getRawButton(3))isArcadeDrive=true;
+        else if(rightStick.getRawButton(2))isArcadeDrive=false;
+        
+        if(isArcadeDrive) //ArcadeDrive
+            roboDR.arcadeDrive(rightStick,true);
+        else //TankDrive
+            roboDR.tankDrive(leftStick,rightStick);
+    }
 }
