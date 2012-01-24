@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj.*;
 public class RobotTemplate extends IterativeRobot {
     //Declare variables for Victors
     Victor leftM,rightM;
+    Victor leftPM, rightPM; //pitching machine Victors
+    Victor feedMotor;
     
     //Declare Joysticks
     Joystick leftStick, rightStick;
@@ -28,6 +30,7 @@ public class RobotTemplate extends IterativeRobot {
     
     //Declare DriveMode boolean
     boolean isArcadeDrive;
+    boolean shooterOn;
     
     /**
      * This function is run when the robot is first started up and should be
@@ -35,12 +38,19 @@ public class RobotTemplate extends IterativeRobot {
      */
     public void robotInit() {
         leftM=new Victor(1,3);
-        rightm=new Victor(1,4);
+        rightM=new Victor(1,4);
+        
+        leftPM=new Victor(1,1);
+        rightRM=new Victor(1,2);
+        
+        feedMotor=new Victor(1,5);
+        
         
         roboDR=new RobotDrive(leftM,rightM);
         leftStick=new Joystick(2);
         rightStick=new Joystick(1);
         isArcadeDrive=false;
+        shooterOn=false;
     }
 
     /**
@@ -69,5 +79,17 @@ public class RobotTemplate extends IterativeRobot {
             roboDR.arcadeDrive(rightStick,true);
         else //TankDrive
             roboDR.tankDrive(leftStick,rightStick);
+            
+        //feedMechanism
+        if(leftStick.getTrigger())feedMotor.set(.5);
+        
+        //pitcherMotors
+        if(leftStick.getRawButton(3))shooterOn=true;
+        else if(leftStick.getRawButton(2))shooterOn=false;
+        
+        if(shooterOn){
+            leftPM.set(1.0);
+            rightPM.set(1.0); 
+        }
     }
 }
